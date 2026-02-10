@@ -5,23 +5,50 @@ using UnityEngine;
 public class Agent : MonoBehaviour
 {
     [SerializeField] private Agent _target = default;
-    [SerializeField] public float _maxForce = 20, _viewRadius = 20, _stopDistance = 0.02f, _modelRadius = 1.5f;
+    [SerializeField] public float _maxForce = 20, _viewRadius = 20, _stopDistance = 2.0f, _modelRadius = 1.5f; // Aumenté stopDistance
     [SerializeField] public float _maxSpeed = 10;
     [SerializeField] protected Vector3 _velocity = default;
     [SerializeField] private List<Transform> _waypoints = new();
-    [SerializeField] private LayerMask _obstacleMask;
-    
+    [SerializeField] protected LayerMask _obstacleMask;
+    [SerializeField] protected Team _team = Team.Team1;
+
     public Agent target { get { return _target; } }
     public Vector3 velocity { get { return _velocity; } }
     public List<Transform> waypoints { get { return _waypoints; } }
     public LayerMask ObstacleMask { get { return _obstacleMask; } }
+    public Team team { get { return _team; } }
 
     public enum Team{
         Team1,
         Team2,
         Team3,
         Team4
-    } 
+    }
+
+    protected virtual void Initialize() { }
+
+    protected virtual void Start() { }
+
+    protected virtual void AgentUpdate()
+    {
+        ApplyMovement();
+    }
+
+    protected void ApplyMovement()
+    {
+        if (_velocity.magnitude > 0.1f)
+        {
+            // Aplicar rotación solo si hay movimiento significativo
+            Vector3 flatVelocity = new Vector3(_velocity.x, 0, _velocity.z);
+            if (flatVelocity.magnitude > 0.1f)
+            {
+                transform.forward = Vector3.Lerp(transform.forward, flatVelocity.normalized, Time.deltaTime * 5f);
+            }
+
+            // Aplicar movimiento
+            transform.position += _velocity * Time.deltaTime;
+        }
+    }
 
     public void Move()
     {
@@ -30,7 +57,7 @@ public class Agent : MonoBehaviour
         transform.position += _velocity * Time.deltaTime;
     }
 
-    public void OnUpdate()
+    protected virtual void OnUpdate()
     {
         Movement();
     }
@@ -59,15 +86,19 @@ public class Agent : MonoBehaviour
 
     public Vector3 Seek(Vector3 targetPos)
     {
-        if (targetPos == null) return default;
-
         Vector3 desired = targetPos - transform.position;
+
+        // Si estamos muy cerca, detener
+        if (desired.magnitude < _stopDistance)
+        {
+            return -_velocity * 0.5f; // Fuerza de frenado
+        }
+
         desired.Normalize();
         desired *= _maxSpeed;
 
         Vector3 steering = desired - _velocity;
-
-        steering = Vector3.ClampMagnitude(steering, _maxForce * Time.deltaTime);
+        steering = Vector3.ClampMagnitude(steering, _maxForce);
 
         return steering;
     }
@@ -92,12 +123,32 @@ public class Agent : MonoBehaviour
 
     public Vector3 AddForce(Vector3 force)
     {
-        return _velocity = Vector3.ClampMagnitude(_velocity + force, _maxSpeed);
+        _velocity += force;
+
+        if (_velocity.magnitude > _maxSpeed)
+        {
+            _velocity = _velocity.normalized * _maxSpeed;
+        }
+
+        _velocity.y = 0;
+
+        return _velocity;
     }
 
     public Vector3 Flee(Vector3 targetPos)
     {
         return -Seek(targetPos);
+    }
+
+    public void LookAt(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        direction.y = 0;
+
+        if (direction.magnitude > 0.1f)
+        {
+            transform.forward = Vector3.Lerp(transform.forward, direction, Time.deltaTime * 5f);
+        }
     }
 
     public Vector3 ObstacleAvoidance(LayerMask obstacleMask)
@@ -174,5 +225,9 @@ public class Agent : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, _viewRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _viewRadius * 0.5f);
+
+        // direccion
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(transform.position, transform.forward * 2f);
     }
 }
