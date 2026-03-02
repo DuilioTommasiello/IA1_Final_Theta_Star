@@ -1,76 +1,184 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Leader : Agent
 {
-    [Header("Leader Movement")]
-    [SerializeField] private float patrolRadius = 10f;
-    [SerializeField] private float patrolSpeed = 5f;
-    [SerializeField] private bool patrolRandomly = true;
+    private static Leader selectedLeader = null;  // Líder actualmente seleccionado
 
-    private Vector3 patrolCenter;
-    private Vector3 currentPatrolTarget;
-    private float patrolChangeTime = 0f;
-    private float patrolChangeInterval = 3f;
+    [Header("RTS Controls")]
+    [SerializeField] private LayerMask groundLayer;      // Capa del suelo para el raycast
+    [SerializeField] private float arrivalDistance = 1f; // Distancia para considerar destino alcanzado
+    [SerializeField] private bool showDebug = true;      // Mostrar gizmos y logs
+
+    [Header("Selection Visual")]
+    [SerializeField] private Color selectedColor = Color.yellow;
+    private Color originalColor;
+    private Renderer rend;
+
+    private Vector3 destination;
+    private bool hasDestination = false;
 
     protected override void Start()
     {
         base.Start();
-        patrolCenter = transform.position;
-        SetNewPatrolTarget();
+
+        // Obtener el renderer para feedback visual
+        rend = GetComponent<Renderer>();
+        if (rend != null)
+            originalColor = rend.material.color;
+
+        // Si no se asignó capa de suelo, intentar buscar una por defecto
+        if (groundLayer == 0)
+            groundLayer = LayerMask.GetMask("Ground");
     }
 
-    protected override void OnUpdate()
+    private void Update()
     {
-        base.OnUpdate();
-
-        if (patrolRandomly)
+        // Solo el líder seleccionado procesa entrada y movimiento
+        if (selectedLeader == this)
         {
-            PatrolMovement();
+            HandleInput();
+            CheckDeselection();
+        }
+
+        // Movimiento hacia el destino si existe
+        if (hasDestination)
+            MoveToDestination();
+
+        // --- NUEVA LÓGICA DE EVITACIÓN SUAVIZADA ---
+        // Calcular fuerza bruta de evitación (usando el método mejorado de Agent)
+        Vector3 rawAvoidance = ObstacleAvoidance(_obstacleMask);
+        // Suavizar usando Lerp (evita cambios bruscos)
+        smoothedAvoidanceForce = Vector3.Lerp(smoothedAvoidanceForce, rawAvoidance, Time.deltaTime / avoidanceSmoothTime);
+        // Aplicar la fuerza suavizada al agente
+        if (smoothedAvoidanceForce.magnitude > 0.01f)
+            AddForce(smoothedAvoidanceForce);
+        // -----------------------------------------
+
+        // Aplicar el movimiento calculado (usando el método de Agent)
+        ApplyMovement();
+    }
+
+    /// <summary>
+    /// Maneja la entrada del usuario para mover al líder seleccionado.
+    /// </summary>
+    private void HandleInput()
+    {
+        // Clic derecho: fijar destino
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer))
+            {
+                destination = hit.point;
+                hasDestination = true;
+                if (showDebug)
+                    Debug.Log($"Destino fijado en {destination}");
+            }
         }
     }
 
-    private void PatrolMovement()
+    /// <summary>
+    /// Comprueba si se debe deseleccionar al líder (clic izquierdo en espacio vacío).
+    /// </summary>
+    private void CheckDeselection()
     {
-        patrolChangeTime += Time.deltaTime;
-
-        if (patrolChangeTime >= patrolChangeInterval ||
-            Vector3.Distance(transform.position, currentPatrolTarget) < _stopDistance)
+        if (Input.GetMouseButtonDown(0))
         {
-            SetNewPatrolTarget();
-            patrolChangeTime = 0f;
-        }
-
-        // Mover hacia el objetivo de patrulla
-        Vector3 steering = Arrive(currentPatrolTarget);
-        _velocity = AddForce(steering);
-
-        // Rotar en la dirección del movimiento
-        if (_velocity.magnitude > 0.1f)
-        {
-            transform.forward = Vector3.Lerp(transform.forward, _velocity.normalized, Time.deltaTime * 5f);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                // Si no se clickeó sobre otro líder, deseleccionar
+                if (hit.collider.GetComponent<Leader>() == null)
+                {
+                    Deselect();
+                }
+            }
+            else
+            {
+                // Clic en el vacío
+                Deselect();
+            }
         }
     }
 
-    private void SetNewPatrolTarget()
+    /// <summary>
+    /// Movimiento hacia el destino usando Arrive.
+    /// </summary>
+    private void MoveToDestination()
     {
-        Vector2 randomCircle = Random.insideUnitCircle * patrolRadius;
-        currentPatrolTarget = patrolCenter + new Vector3(randomCircle.x, 0, randomCircle.y);
+        float distance = Vector3.Distance(transform.position, destination);
+        if (distance <= arrivalDistance)
+        {
+            // Destino alcanzado
+            hasDestination = false;
+            _velocity = Vector3.zero;
+            return;
+        }
 
-        Debug.DrawLine(transform.position, currentPatrolTarget, Color.cyan, patrolChangeInterval);
+        // Calcular steering con Arrive (frena al acercarse)
+        Vector3 steering = Arrive(destination);
+        AddForce(steering);
     }
 
-    private void OnDrawGizmosSelected()
+    /// <summary>
+    /// Selecciona este líder al hacer clic izquierdo sobre él.
+    /// </summary>
+    private void OnMouseDown()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(patrolCenter, patrolRadius);
-
-        if (Application.isPlaying)
+        if (Input.GetMouseButtonDown(0)) // Solo clic izquierdo
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(currentPatrolTarget, 0.5f);
-            Gizmos.DrawLine(transform.position, currentPatrolTarget);
+            // Deseleccionar el anterior si existe
+            if (selectedLeader != null && selectedLeader != this)
+                selectedLeader.OnDeselected();
+
+            selectedLeader = this;
+            OnSelected();
+        }
+    }
+
+    private void OnSelected()
+    {
+        if (showDebug)
+            Debug.Log($"{name} seleccionado");
+
+        // Feedback visual: cambiar color
+        if (rend != null)
+            rend.material.color = selectedColor;
+    }
+
+    private void OnDeselected()
+    {
+        if (showDebug)
+            Debug.Log($"{name} deseleccionado");
+
+        // Restaurar color original
+        if (rend != null)
+            rend.material.color = originalColor;
+    }
+
+    /// <summary>
+    /// Método auxiliar para deseleccionar (usado desde CheckDeselection).
+    /// </summary>
+    private void Deselect()
+    {
+        if (selectedLeader == this)
+        {
+            selectedLeader = null;
+            OnDeselected();
+        }
+    }
+
+    // Dibujar gizmos para depuración
+    private void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+        if (hasDestination && showDebug)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(destination, 0.5f);
+            Gizmos.DrawLine(transform.position, destination);
         }
     }
 }

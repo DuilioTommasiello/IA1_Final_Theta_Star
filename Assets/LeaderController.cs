@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : Agent
+public class LeaderController : Agent
 {
     [Header("Player Control")]
     [SerializeField] private float moveSpeed = 10f;

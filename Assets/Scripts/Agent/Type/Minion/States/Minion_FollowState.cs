@@ -22,7 +22,7 @@ public class Minion_FollowState : State
 
     protected override void OnEnter()
     {
-        Debug.Log($"{minion.name}: Entering Follow State");
+        //Debug.Log($"{minion.name}: Entering Follow State");
 
         // Asignar formación si no la tiene
         if (!hasFormation && minion.target != null)
@@ -138,7 +138,7 @@ public class Minion_FollowState : State
         formationIndex = count % 8; // Máximo 8 posiciones en formación
         hasFormation = true;
 
-        Debug.Log($"{minion.name}: Formation index {formationIndex} (total followers: {count})");
+        //Debug.Log($"{minion.name}: Formation index {formationIndex} (total followers: {count})");
     }
 
     private void ApplyFlocking()
@@ -215,6 +215,6 @@ public class Minion_FollowState : State
 
     protected override void OnExit()
     {
-        Debug.Log($"{minion.name}: Exiting Follow State");
+        //Debug.Log($"{minion.name}: Exiting Follow State");
     }
 }

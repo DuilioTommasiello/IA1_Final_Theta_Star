@@ -12,6 +12,11 @@ public class Agent : MonoBehaviour
     [SerializeField] protected LayerMask _obstacleMask;
     [SerializeField] protected Team _team = Team.Team1;
 
+    [Header("Obstacle Avoidance")]
+    [SerializeField] protected float avoidanceSmoothTime = 0.2f;
+    [SerializeField] protected float maxAvoidanceForce = 5f;
+    protected Vector3 smoothedAvoidanceForce = Vector3.zero;
+
     public Agent target { get { return _target; } }
     public Vector3 velocity { get { return _velocity; } }
     public List<Transform> waypoints { get { return _waypoints; } }
@@ -153,44 +158,59 @@ public class Agent : MonoBehaviour
 
     public Vector3 ObstacleAvoidance(LayerMask obstacleMask)
     {
-        Vector3 avoidanceForce = Vector3.zero;
-        Transform t = transform; // cacheo el transform
+        Vector3 rawAvoidance = Vector3.zero;
+        Transform t = transform;
 
-        // Raycast modifiers
+        // Longitudes de rayos más cortas para detectar solo obstáculos cercanos
+        float frontRayLength = 2.5f;
+        float sideRayLength = 1.8f;
+
+        // Direcciones: frente, diagonales, laterales
         Vector3[] rayDirections = {
-        t.forward,                         // Forward
-        -t.forward,                        // Backward
-        -t.right,                          // Left
-        t.right                            // Right
+        t.forward,
+        (t.forward + t.right).normalized,
+        (t.forward - t.right).normalized,
+        t.right,
+        -t.right
     };
 
-        float[] rayMultipliers = {
-        _viewRadius * 0.5f,               // Forward range
-        _viewRadius * 0.5f,               // Backward range
-        _viewRadius * 0.3f,               // Side range
-        _viewRadius * 0.3f                // Side range
+        float[] rayLengths = {
+        frontRayLength,
+        frontRayLength * 0.8f,
+        frontRayLength * 0.8f,
+        sideRayLength,
+        sideRayLength
     };
 
-        Vector3[] avoidanceOffsets = {
-        -t.right,                         // Avoid to the left
-        t.right,                          // Avoid to the right
-        t.right,                          // Avoid to the right
-        -t.right                          // Avoid to the left
-    };
+        float[] rayWeights = { 1.2f, 1.0f, 1.0f, 0.6f, 0.6f }; // Menos peso lateral
 
-        // raycasts
         for (int i = 0; i < rayDirections.Length; i++)
         {
-            if (Physics.Raycast(t.position + rayDirections[i] * _modelRadius, rayDirections[i], rayMultipliers[i], obstacleMask))
+            Vector3 rayOrigin = t.position + rayDirections[i] * _modelRadius;
+            if (Physics.Raycast(rayOrigin, rayDirections[i], out RaycastHit hit, rayLengths[i], obstacleMask))
             {
-                avoidanceForce += Seek(t.position + avoidanceOffsets[i]);
-                
-                Debug.DrawRay(t.position + rayDirections[i] * _modelRadius, rayDirections[i] * rayMultipliers[i], Color.red);
-                return avoidanceForce;
+                float distance = hit.distance;
+                // Factor de repulsión cuadrático: más suave al inicio, fuerte al final
+                float tFactor = Mathf.Clamp01(distance / rayLengths[i]);
+                float repulsionFactor = (1f - tFactor) * (1f - tFactor); // cuadrático
+
+                // Dirección perpendicular al rayo (producto cruz con up)
+                Vector3 repelDir = Vector3.Cross(rayDirections[i], Vector3.up).normalized;
+                // Elegimos la dirección que aleje del obstáculo: usamos el signo del producto punto con la dirección del obstáculo
+                // Pero para simplificar, usamos siempre la misma dirección; en la práctica el agente girará
+                rawAvoidance += repelDir * maxAvoidanceForce * rayWeights[i] * repulsionFactor;
+
+                Debug.DrawRay(rayOrigin, rayDirections[i] * rayLengths[i], Color.red);
+            }
+            else
+            {
+                Debug.DrawRay(rayOrigin, rayDirections[i] * rayLengths[i], Color.green);
             }
         }
 
-        return avoidanceForce;
+        // Limitar la fuerza bruta para evitar picos
+        rawAvoidance = Vector3.ClampMagnitude(rawAvoidance, maxAvoidanceForce);
+        return rawAvoidance;
     }
 
 
@@ -219,7 +239,7 @@ public class Agent : MonoBehaviour
         return _velocity = Vector3.zero;
     }
 
-    private void OnDrawGizmos()
+    protected void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, _viewRadius);

@@ -17,7 +17,7 @@ public class Minion_AttackState : State
 
     protected override void OnEnter()
     {
-        Debug.Log($"{minion.name}: Entering Attack State");
+        //Debug.Log($"{minion.name}: Entering Attack State");
 
         // Guardar la velocidad original
         originalMaxSpeed = minion._maxSpeed;
