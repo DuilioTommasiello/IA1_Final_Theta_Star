@@ -31,7 +31,6 @@ public class LeaderController : Agent
 
     private void HandleInput()
     {
-        // Movimiento WASD
         inputDirection = Vector3.zero;
 
         if (Input.GetKey(KeyCode.W)) inputDirection += Vector3.forward;
@@ -39,23 +38,15 @@ public class LeaderController : Agent
         if (Input.GetKey(KeyCode.A)) inputDirection += Vector3.left;
         if (Input.GetKey(KeyCode.D)) inputDirection -= Vector3.left;
 
-        // Normalizar dirección
         if (inputDirection.magnitude > 1f)
-        {
             inputDirection.Normalize();
-        }
 
-        // Sprint
         currentSpeed = Input.GetKey(sprintKey) ? moveSpeed * sprintMultiplier : moveSpeed;
 
-        // Rotación con mouse
         if (useMouseLook)
-        {
             HandleMouseLook();
-        }
         else
         {
-            // Rotación con teclas Q/E
             if (Input.GetKey(KeyCode.Q))
                 transform.Rotate(0, -rotationSpeed, 0);
             if (Input.GetKey(KeyCode.E))
@@ -65,7 +56,7 @@ public class LeaderController : Agent
 
     private void HandleMouseLook()
     {
-        if (Input.GetMouseButton(1)) // Botón derecho mantiene para rotar
+        if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
             transform.Rotate(0, mouseX, 0);
@@ -76,40 +67,27 @@ public class LeaderController : Agent
     {
         if (inputDirection.magnitude > 0.1f)
         {
-            // Convertir dirección de entrada a dirección del mundo
             Vector3 worldDirection = transform.TransformDirection(inputDirection);
             worldDirection.y = 0;
             worldDirection.Normalize();
 
-            // Calcular velocidad deseada
             Vector3 desiredVelocity = worldDirection * currentSpeed;
-
-            // Calcular fuerza de steering
             Vector3 steering = desiredVelocity - _velocity;
             steering = Vector3.ClampMagnitude(steering, _maxForce * Time.deltaTime);
 
-            // Aplicar fuerza
             AddForce(steering);
 
-            // Rotar en dirección del movimiento si no estamos usando mouse look
             if (!useMouseLook || !Input.GetMouseButton(1))
-            {
                 transform.forward = Vector3.Lerp(transform.forward, worldDirection, Time.deltaTime * 5f);
-            }
         }
         else
-        {
-            // Frenar suavemente
             _velocity = Vector3.Lerp(_velocity, Vector3.zero, Time.deltaTime * 5f);
-        }
 
-        // Aplicar movimiento base
         base.ApplyMovement();
     }
 
     private void OnGUI()
     {
-        // Mostrar controles en pantalla
         GUIStyle style = new GUIStyle(GUI.skin.label);
         style.normal.textColor = Color.white;
         style.fontSize = 12;
@@ -117,8 +95,8 @@ public class LeaderController : Agent
         GUI.Label(new Rect(10, 10, 300, 100),
             "Controles:\n" +
             "WASD - Movimiento\n" +
-            "Q/E - Rotación (si Mouse Look desactivado)\n" +
-            "Click Derecho + Mouse - Rotar cámara\n" +
+            "Q/E - Rotacion (si Mouse Look desactivado)\n" +
+            "Click Derecho + Mouse - Rotar camara\n" +
             "Shift - Sprint\n" +
             "\nMinions: " + CountFollowers(),
             style);

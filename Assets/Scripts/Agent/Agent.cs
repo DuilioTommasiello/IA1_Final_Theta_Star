@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public class Agent : MonoBehaviour
 {
     [SerializeField] private Agent _target = default;
-    [SerializeField] public float _maxForce = 20, _viewRadius = 20, _stopDistance = 2.0f, _modelRadius = 1.5f; // Aumenté stopDistance
+    [SerializeField] public float _maxForce = 20, _viewRadius = 20, _stopDistance = 2.0f, _modelRadius = 1.5f;
     [SerializeField] public float _maxSpeed = 10;
     [SerializeField] protected Vector3 _velocity = default;
     [SerializeField] private List<Transform> _waypoints = new();
@@ -23,7 +22,8 @@ public class Agent : MonoBehaviour
     public LayerMask ObstacleMask { get { return _obstacleMask; } }
     public Team team { get { return _team; } }
 
-    public enum Team{
+    public enum Team
+    {
         Team1,
         Team2,
         Team3,
@@ -31,26 +31,17 @@ public class Agent : MonoBehaviour
     }
 
     protected virtual void Initialize() { }
-
     protected virtual void Start() { }
-
-    protected virtual void AgentUpdate()
-    {
-        ApplyMovement();
-    }
+    protected virtual void AgentUpdate() { ApplyMovement(); }
 
     protected void ApplyMovement()
     {
         if (_velocity.magnitude > 0.1f)
         {
-            // Aplicar rotación solo si hay movimiento significativo
             Vector3 flatVelocity = new Vector3(_velocity.x, 0, _velocity.z);
             if (flatVelocity.magnitude > 0.1f)
-            {
                 transform.forward = Vector3.Lerp(transform.forward, flatVelocity.normalized, Time.deltaTime * 5f);
-            }
 
-            // Aplicar movimiento
             transform.position += _velocity * Time.deltaTime;
         }
     }
@@ -62,14 +53,10 @@ public class Agent : MonoBehaviour
         transform.position += _velocity * Time.deltaTime;
     }
 
-    protected virtual void OnUpdate()
-    {
-        Movement();
-    }
+    protected virtual void OnUpdate() { Movement(); }
 
     public void Movement()
     {
-        //locomotion
         _velocity.y = 0;
         transform.position += _velocity * Time.deltaTime;
         transform.forward = _velocity;
@@ -93,11 +80,8 @@ public class Agent : MonoBehaviour
     {
         Vector3 desired = targetPos - transform.position;
 
-        // Si estamos muy cerca, detener
         if (desired.magnitude < _stopDistance)
-        {
-            return -_velocity * 0.5f; // Fuerza de frenado
-        }
+            return -_velocity * 0.5f; // fuerza de frenado
 
         desired.Normalize();
         desired *= _maxSpeed;
@@ -115,14 +99,10 @@ public class Agent : MonoBehaviour
             _velocity = Vector3.zero;
             return _velocity;
         }
-        //Que vaya al objetivo directamente
-        //                  Vo              Vf
+
         Vector3 desired = (targetPos - transform.position).normalized * speed;
-
         Vector3 steering = desired - _velocity;
-
         steering = Vector3.ClampMagnitude(steering, _maxForce * Time.deltaTime);
-
         return steering;
     }
 
@@ -131,19 +111,13 @@ public class Agent : MonoBehaviour
         _velocity += force;
 
         if (_velocity.magnitude > _maxSpeed)
-        {
             _velocity = _velocity.normalized * _maxSpeed;
-        }
 
         _velocity.y = 0;
-
         return _velocity;
     }
 
-    public Vector3 Flee(Vector3 targetPos)
-    {
-        return -Seek(targetPos);
-    }
+    public Vector3 Flee(Vector3 targetPos) { return -Seek(targetPos); }
 
     public void LookAt(Vector3 targetPosition)
     {
@@ -151,9 +125,7 @@ public class Agent : MonoBehaviour
         direction.y = 0;
 
         if (direction.magnitude > 0.1f)
-        {
             transform.forward = Vector3.Lerp(transform.forward, direction, Time.deltaTime * 5f);
-        }
     }
 
     public Vector3 ObstacleAvoidance(LayerMask obstacleMask)
@@ -161,28 +133,27 @@ public class Agent : MonoBehaviour
         Vector3 rawAvoidance = Vector3.zero;
         Transform t = transform;
 
-        // Longitudes de rayos más cortas para detectar solo obstáculos cercanos
+        // longitudes de rayos para deteccion cercana
         float frontRayLength = 2.5f;
         float sideRayLength = 1.8f;
 
-        // Direcciones: frente, diagonales, laterales
         Vector3[] rayDirections = {
-        t.forward,
-        (t.forward + t.right).normalized,
-        (t.forward - t.right).normalized,
-        t.right,
-        -t.right
-    };
+            t.forward,
+            (t.forward + t.right).normalized,
+            (t.forward - t.right).normalized,
+            t.right,
+            -t.right
+        };
 
         float[] rayLengths = {
-        frontRayLength,
-        frontRayLength * 0.8f,
-        frontRayLength * 0.8f,
-        sideRayLength,
-        sideRayLength
-    };
+            frontRayLength,
+            frontRayLength * 0.8f,
+            frontRayLength * 0.8f,
+            sideRayLength,
+            sideRayLength
+        };
 
-        float[] rayWeights = { 1.2f, 1.0f, 1.0f, 0.6f, 0.6f }; // Menos peso lateral
+        float[] rayWeights = { 1.2f, 1.0f, 1.0f, 0.6f, 0.6f };
 
         for (int i = 0; i < rayDirections.Length; i++)
         {
@@ -190,54 +161,36 @@ public class Agent : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirections[i], out RaycastHit hit, rayLengths[i], obstacleMask))
             {
                 float distance = hit.distance;
-                // Factor de repulsión cuadrático: más suave al inicio, fuerte al final
+                // factor cuadratico: aumenta rapidamente al acercarse
                 float tFactor = Mathf.Clamp01(distance / rayLengths[i]);
-                float repulsionFactor = (1f - tFactor) * (1f - tFactor); // cuadrático
+                float repulsionFactor = (1f - tFactor) * (1f - tFactor);
 
-                // Dirección perpendicular al rayo (producto cruz con up)
                 Vector3 repelDir = Vector3.Cross(rayDirections[i], Vector3.up).normalized;
-                // Elegimos la dirección que aleje del obstáculo: usamos el signo del producto punto con la dirección del obstáculo
-                // Pero para simplificar, usamos siempre la misma dirección; en la práctica el agente girará
                 rawAvoidance += repelDir * maxAvoidanceForce * rayWeights[i] * repulsionFactor;
 
                 Debug.DrawRay(rayOrigin, rayDirections[i] * rayLengths[i], Color.red);
             }
             else
-            {
                 Debug.DrawRay(rayOrigin, rayDirections[i] * rayLengths[i], Color.green);
-            }
         }
 
-        // Limitar la fuerza bruta para evitar picos
         rawAvoidance = Vector3.ClampMagnitude(rawAvoidance, maxAvoidanceForce);
         return rawAvoidance;
     }
 
-
-
     public bool HasObstacleToAvoid(LayerMask obstacleMaks)
     {
-        //Vector3 avoidanceObs = ObstacleAvoidance(obstacleMaks);
-        //AddForce(avoidanceObs);
         return ObstacleAvoidance(obstacleMaks) != Vector3.zero;
     }
 
     public Vector3 Pursuit(Agent target)
     {
         Vector3 futurePos = target.transform.position + target.velocity;
-
         return Seek(futurePos);
     }
 
-    public Vector3 Evade(Agent target)
-    {
-        return -Pursuit(target);
-    }
-
-    public Vector3 Stop()
-    {
-        return _velocity = Vector3.zero;
-    }
+    public Vector3 Evade(Agent target) { return -Pursuit(target); }
+    public Vector3 Stop() { return _velocity = Vector3.zero; }
 
     protected void OnDrawGizmos()
     {
@@ -245,8 +198,6 @@ public class Agent : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, _viewRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _viewRadius * 0.5f);
-
-        // direccion
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * 2f);
     }

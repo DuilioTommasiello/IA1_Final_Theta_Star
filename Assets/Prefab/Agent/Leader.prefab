@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _maxForce: 20
+  _maxForce: 35
   _viewRadius: 25
   _stopDistance: 1
   _modelRadius: 1.5
@@ -112,7 +112,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   arrivalDistance: 1
-  showDebug: 1
+  showDebug: 0
   selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!136 &2423023981536657310
 CapsuleCollider:
@@ -152,8 +152,8 @@ MonoBehaviour:
   _target: {fileID: 0}
   _maxForce: 20
   _viewRadius: 20
-  _stopDistance: 2
-  _modelRadius: 1.5
+  _stopDistance: 0.2
+  _modelRadius: 0.5
   _maxSpeed: 10
   _velocity: {x: 0, y: 0, z: 0}
   _waypoints: []
@@ -162,8 +162,8 @@ MonoBehaviour:
     m_Bits: 64
   _team: 0
   avoidanceSmoothTime: 0.2
-  maxAvoidanceForce: 5
-  moveSpeed: 10
+  maxAvoidanceForce: 10
+  moveSpeed: 20
   rotationSpeed: 5
   sprintKey: 304
   sprintMultiplier: 1.5

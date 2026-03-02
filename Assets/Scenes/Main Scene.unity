@@ -24289,10 +24289,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Leader
       objectReference: {fileID: 0}
-    - target: {fileID: 1312498291482113743, guid: f26e4a5c129412a4f9e3f7d8a5c82554, type: 3}
-      propertyPath: _maxForce
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 4861463510543742817, guid: f26e4a5c129412a4f9e3f7d8a5c82554, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.2500005
