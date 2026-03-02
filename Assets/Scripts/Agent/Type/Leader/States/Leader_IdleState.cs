@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Leader_IdleState : State
@@ -14,15 +12,21 @@ public class Leader_IdleState : State
     protected override void OnEnter()
     {
         Debug.Log("Idle");
+        leader.Stop();
     }
 
     protected override void OnUpdate(float deltaTime)
     {
-        throw new System.NotImplementedException();
+        Debug.Log($"IdleState.Update: HasDestination = {leader.HasDestination}");
+        if (leader.HasDestination)
+        {
+            Debug.Log("Enviando MoveOrder desde IdleState");
+            leader.SendInput("MoveOrder");
+        }
     }
 
     protected override void OnExit()
     {
-        throw new System.NotImplementedException();
+        // No es necesario hacer nada al salir
     }
 }

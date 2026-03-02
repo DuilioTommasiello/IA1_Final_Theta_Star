@@ -112,8 +112,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   arrivalDistance: 1
-  showDebug: 0
+  showDebug: 1
   selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  INPUT_MOVE_ORDER: MoveOrder
+  INPUT_ARRIVED: Arrived
 --- !u!136 &2423023981536657310
 CapsuleCollider:
   m_ObjectHideFlags: 0

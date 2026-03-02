@@ -3,6 +3,7 @@ using UnityEngine;
 public class Leader : Agent
 {
     private static Leader selectedLeader = null;
+    private FSM fsm;
 
     [Header("RTS Controls")]
     [SerializeField] private LayerMask groundLayer;
@@ -17,6 +18,15 @@ public class Leader : Agent
     private Vector3 destination;
     private bool hasDestination = false;
 
+    // Propiedades para acceso desde los estados
+    public bool HasDestination => hasDestination;
+    public Vector3 Destination => destination;
+    public float ArrivalDistance => arrivalDistance;
+
+    // Inputs para la FSM
+    [HideInInspector] public string INPUT_MOVE_ORDER = "MoveOrder";
+    [HideInInspector] public string INPUT_ARRIVED = "Arrived";
+
     protected override void Start()
     {
         base.Start();
@@ -27,7 +37,22 @@ public class Leader : Agent
 
         if (groundLayer == 0)
             groundLayer = LayerMask.GetMask("Ground");
+
+        InitializeFSM();
     }
+
+    private void InitializeFSM()
+    {
+        Leader_IdleState idle = new Leader_IdleState(this);
+        Leader_MoveState move = new Leader_MoveState(this);
+
+        idle.AddTransition(INPUT_MOVE_ORDER, move);
+        move.AddTransition(INPUT_ARRIVED, idle);
+
+        fsm = new FSM(idle);
+    }
+
+    public void SendInput(string input) => fsm?.SendInput(input);
 
     private void Update()
     {
@@ -37,15 +62,16 @@ public class Leader : Agent
             CheckDeselection();
         }
 
-        if (hasDestination)
-            MoveToDestination();
+        fsm?.Update(Time.deltaTime);
 
-        // calculo de fuerza de evitacion suavizada
+        // --- Cálculo de fuerza de evitación suavizada ---
         Vector3 rawAvoidance = ObstacleAvoidance(_obstacleMask);
         smoothedAvoidanceForce = Vector3.Lerp(smoothedAvoidanceForce, rawAvoidance, Time.deltaTime / avoidanceSmoothTime);
         if (smoothedAvoidanceForce.magnitude > 0.01f)
             AddForce(smoothedAvoidanceForce);
+        // ------------------------------------------------
 
+        // Aplicar movimiento (calculado por los estados y la evitación)
         ApplyMovement();
     }
 
@@ -61,6 +87,9 @@ public class Leader : Agent
                 hasDestination = true;
                 //if (showDebug)
                 //    Debug.Log($"destino fijado en {destination}");
+
+                // Enviar orden de movimiento a la FSM
+                SendInput(INPUT_MOVE_ORDER);
             }
         }
     }
@@ -81,18 +110,15 @@ public class Leader : Agent
         }
     }
 
-    private void MoveToDestination()
+    public void MoveToDestination()
     {
-        float distance = Vector3.Distance(transform.position, destination);
-        if (distance <= arrivalDistance)
-        {
-            hasDestination = false;
-            _velocity = Vector3.zero;
-            return;
-        }
-
         Vector3 steering = Arrive(destination);
         AddForce(steering);
+    }
+
+    public void ClearDestination()
+    {
+        hasDestination = false;
     }
 
     private void OnMouseDown()
@@ -109,20 +135,14 @@ public class Leader : Agent
 
     private void OnSelected()
     {
-        if (showDebug)
-            Debug.Log($"{name} seleccionado");
-
-        if (rend != null)
-            rend.material.color = selectedColor;
+        if (showDebug) Debug.Log($"{name} seleccionado");
+        if (rend != null) rend.material.color = selectedColor;
     }
 
     private void OnDeselected()
     {
-        if (showDebug)
-            Debug.Log($"{name} deseleccionado");
-
-        if (rend != null)
-            rend.material.color = originalColor;
+        if (showDebug) Debug.Log($"{name} deseleccionado");
+        if (rend != null) rend.material.color = originalColor;
     }
 
     private void Deselect()

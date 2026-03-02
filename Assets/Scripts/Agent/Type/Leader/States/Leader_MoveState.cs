@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Leader_MoveState : State
@@ -18,12 +16,27 @@ public class Leader_MoveState : State
 
     protected override void OnUpdate(float deltaTime)
     {
-        throw new System.NotImplementedException();
+        if (!leader.HasDestination)
+        {
+            // Si no hay destino, volvemos a idle
+            leader.SendInput(leader.INPUT_ARRIVED);
+            return;
+        }
+
+        // Moverse hacia el destino
+        leader.MoveToDestination();
+
+        // Comprobar si se ha llegado
+        float dist = Vector3.Distance(leader.transform.position, leader.Destination);
+        if (dist <= leader.ArrivalDistance)
+        {
+            leader.ClearDestination();
+            leader.SendInput(leader.INPUT_ARRIVED);
+        }
     }
 
     protected override void OnExit()
     {
-        throw new System.NotImplementedException();
+        // Opcional: cualquier limpieza necesaria
     }
-
 }
