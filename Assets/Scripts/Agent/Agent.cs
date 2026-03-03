@@ -192,10 +192,6 @@ public class Agent : MonoBehaviour
 
     protected void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, _viewRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _viewRadius * 0.5f);
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * 2f);
     }
