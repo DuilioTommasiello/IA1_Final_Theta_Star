@@ -19,6 +19,13 @@ public class Agent : MonoBehaviour
     [SerializeField] private float frontRayLength = 2.5f;
     [SerializeField] private float sideRayLength = 1.8f;
 
+    [Header("Field of View")]
+    [SerializeField] protected FieldOfView fov;
+
+    [Header("Generic FSM Inputs")]
+    public const string INPUT_ENEMY_SPOTTED = "EnemySpotted";
+    public const string INPUT_ENEMY_LOST = "EnemyLost";
+
     public Agent target { get { return _target; } }
     public Vector3 velocity { get { return _velocity; } }
     public List<Transform> waypoints { get { return _waypoints; } }
@@ -34,7 +41,16 @@ public class Agent : MonoBehaviour
     }
 
     protected virtual void Initialize() { }
-    protected virtual void Start() { }
+
+    protected virtual void Start()
+    {
+        if(fov != null)
+        {
+            fov.targetMask = GetEnemyLayers();
+            fov.obstructionMask = _obstacleMask;
+        }
+    }
+
     protected virtual void AgentUpdate() { ApplyMovement(); }
 
     protected void ApplyMovement()
@@ -189,6 +205,30 @@ public class Agent : MonoBehaviour
 
     public Vector3 Evade(Agent target) { return -Pursuit(target); }
     public Vector3 Stop() { return _velocity = Vector3.zero; }
+
+    #region FOV
+    public Agent GetVisibleEnemy()
+    {
+        return fov != null ? fov.CurrentVisibleEnemy : null;
+    }
+
+    private LayerMask GetEnemyLayers()
+    {
+        switch (_team)
+        {
+            case Team.Team1:
+                return LayerMask.GetMask("Team2", "Team3", "Team4");
+            case Team.Team2:
+                return LayerMask.GetMask("Team1", "Team3", "Team4");
+            case Team.Team3:
+                return LayerMask.GetMask("Team1", "Team2", "Team4");
+            case Team.Team4:
+                return LayerMask.GetMask("Team1", "Team2", "Team3");
+            default:
+                return 0;
+        }
+    } 
+    #endregion
 
     protected void OnDrawGizmos()
     {

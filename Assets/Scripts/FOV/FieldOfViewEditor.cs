@@ -21,10 +21,10 @@ public class FieldOfViewEditor : Editor
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngle01 * fov.radius);
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngle02 * fov.radius);
 
-        if (fov.canSeeAgent)
+        if (fov.CurrentVisibleEnemy)
         {
             Handles.color = Color.red;
-            Handles.DrawLine(fov.transform.position, fov.agentRef.transform.position);
+            Handles.DrawLine(fov.transform.position, fov.CurrentVisibleEnemy.transform.position);
         }
     }
 

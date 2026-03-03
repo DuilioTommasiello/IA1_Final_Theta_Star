@@ -112,6 +112,7 @@ MonoBehaviour:
   maxAvoidanceForce: 1
   frontRayLength: 3
   sideRayLength: 2.5
+  fov: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -172,6 +173,7 @@ MonoBehaviour:
   maxAvoidanceForce: 10
   frontRayLength: 2.5
   sideRayLength: 1.8
+  fov: {fileID: 0}
   moveSpeed: 20
   rotationSpeed: 5
   sprintKey: 304
@@ -190,17 +192,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f073d4a60316e904e9ca723a7da60819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 15
+  radius: 25
   angle: 100
   fovRefreshRate: 0.2
-  agentRef: {fileID: 0}
   targetMask:
     serializedVersion: 2
     m_Bits: 128
   obstructionMask:
     serializedVersion: 2
     m_Bits: 64
-  canSeeAgent: 0
+  currentVisibleEnemy: {fileID: 0}
 --- !u!1 &272411881447566685
 GameObject:
   m_ObjectHideFlags: 0

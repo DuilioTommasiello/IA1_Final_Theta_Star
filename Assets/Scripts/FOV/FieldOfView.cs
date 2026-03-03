@@ -1,18 +1,17 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FieldOfView : MonoBehaviour
 {
     public float radius;
     [Range(0f, 360f)] public float angle;
-    [SerializeField, Range(0.1f, 1f)] private float fovRefreshRate = 1f;
-    public GameObject agentRef;
-
+    [SerializeField, Range(0.1f, 1f)] private float fovRefreshRate = 0.2f;
     public LayerMask targetMask;
     public LayerMask obstructionMask;
 
-    public bool canSeeAgent;
+    [SerializeField] private Agent currentVisibleEnemy;
+
+    public Agent CurrentVisibleEnemy => currentVisibleEnemy;
 
     private void Start()
     {
@@ -22,36 +21,46 @@ public class FieldOfView : MonoBehaviour
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(fovRefreshRate);
-
         while (true)
         {
             yield return wait;
-            FielOfViewCheck();
+            UpdateVisibleEnemy();
         }
     }
 
-    private void FielOfViewCheck()
+    private void UpdateVisibleEnemy()
     {
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, targetMask);
+        Agent closestEnemy = null;
+        float closestDist = Mathf.Infinity;
 
-        if(rangeChecks.Length != 0)
+        foreach (var hit in rangeChecks)
         {
-            Transform target = rangeChecks[0].transform;
-            Vector3 directionToTarget = (target.position - transform.position).normalized;
-
-            if (Vector3.Angle(transform.forward, directionToTarget) < angle / 2)
+            Agent agent = hit.GetComponent<Agent>();
+            if (agent != null)
             {
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-
-                if(!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
-                    canSeeAgent = true;
-                else
-                    canSeeAgent = false;
+                Vector3 directionToTarget = (agent.transform.position - transform.position).normalized;
+                if (Vector3.Angle(transform.forward, directionToTarget) < angle / 2)
+                {
+                    float distanceToTarget = Vector3.Distance(transform.position, agent.transform.position);
+                    if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
+                    {
+                        if (distanceToTarget < closestDist)
+                        {
+                            closestDist = distanceToTarget;
+                            closestEnemy = agent;
+                        }
+                    }
+                }
             }
-            else
-                canSeeAgent = false;
         }
-        else if (canSeeAgent)
-            canSeeAgent = false;
+
+        currentVisibleEnemy = closestEnemy;
+    }
+
+    // Método de utilidad para obtener el enemigo visible (opcional)
+    public Agent GetVisibleEnemy()
+    {
+        return currentVisibleEnemy;
     }
 }
