@@ -85,31 +85,4 @@ public class LeaderController : Agent
 
         base.ApplyMovement();
     }
-
-    private void OnGUI()
-    {
-        GUIStyle style = new GUIStyle(GUI.skin.label);
-        style.normal.textColor = Color.white;
-        style.fontSize = 12;
-
-        GUI.Label(new Rect(10, 10, 300, 100),
-            "Controles:\n" +
-            "WASD - Movimiento\n" +
-            "Q/E - Rotacion (si Mouse Look desactivado)\n" +
-            "Click Derecho + Mouse - Rotar camara\n" +
-            "Shift - Sprint\n" +
-            "\nMinions: " + CountFollowers(),
-            style);
-    }
-
-    private int CountFollowers()
-    {
-        int count = 0;
-        foreach (Minion minion in Minion.allMinions)
-        {
-            if (minion != null && minion.target == this)
-                count++;
-        }
-        return count;
-    }
 }

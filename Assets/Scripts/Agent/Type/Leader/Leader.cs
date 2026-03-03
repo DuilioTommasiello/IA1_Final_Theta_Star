@@ -8,7 +8,6 @@ public class Leader : Agent
     [Header("RTS Controls")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float arrivalDistance = 1f;
-
     [SerializeField] private bool showDebug = true;
 
     [Header("Selection Visual")]
@@ -22,13 +21,13 @@ public class Leader : Agent
     [Header("FSM Inputs")]
     [HideInInspector] public string INPUT_MOVE_ORDER = "MoveOrder";
     [HideInInspector] public string INPUT_ARRIVED = "Arrived";
-    [HideInInspector] public const string INPUT_ENEMY_LOST_TO_IDLE = "LostToIdle"; 
-    [HideInInspector] public const string INPUT_ENEMY_LOST_TO_MOVE = "LostToMove";
 
     private Agent currentTargetEnemy;
-    private bool hadDestinationBeforeAttack;
 
     // getters para acceso desde estados
+    public Agent CurrentTargetEnemy => currentTargetEnemy;
+    public float AttackRange => attackRange;
+    public void Attack() => base.Attack(currentTargetEnemy);
     public bool HasDestination => hasDestination;
     public Vector3 Destination => destination;
     public float ArrivalDistance => arrivalDistance;
@@ -59,13 +58,17 @@ public class Leader : Agent
         move.AddTransition(INPUT_ARRIVED, idle);
         move.AddTransition(INPUT_ENEMY_SPOTTED, attack);
 
-        attack.AddTransition(INPUT_ENEMY_LOST_TO_IDLE, idle);
-        attack.AddTransition(INPUT_ENEMY_LOST_TO_MOVE, move);
+        attack.AddTransition(INPUT_ENEMY_LOST, idle);
+        attack.AddTransition(INPUT_MOVE_ORDER, move);
 
         fsm = new FSM(idle);
     }
 
-    public void SendInput(string input) => fsm?.SendInput(input);
+    public void SendInput(string input)
+    {
+        Debug.Log($"SendInput: {input} desde estado {fsm.currentState?.GetType().Name}"); // debug
+        fsm?.SendInput(input);
+    }
 
     private void Update()
     {
@@ -182,6 +185,14 @@ public class Leader : Agent
         }
     }
 
+    #region Visuals/Debug
+    public override string GetCurrentStateName()
+    {
+        if (fsm == null || fsm.currentState == null) return "Unknown";
+        string fullName = fsm.currentState.GetType().Name;
+        return fullName.Replace("Leader_", "").Replace("State", "");
+    }
+
     private void OnDrawGizmos()
     {
         base.OnDrawGizmos();
@@ -192,4 +203,5 @@ public class Leader : Agent
             Gizmos.DrawLine(transform.position, destination);
         }
     }
+    #endregion
 }

@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 2423023981536657310}
   - component: {fileID: 1099463367189909215}
   - component: {fileID: 7711568488262984853}
+  - component: {fileID: 5310834004354869142}
+  - component: {fileID: 8208828429357596658}
   m_Layer: 0
   m_Name: Leader
   m_TagString: Untagged
@@ -113,6 +115,10 @@ MonoBehaviour:
   frontRayLength: 3
   sideRayLength: 2.5
   fov: {fileID: 0}
+  stats: {fileID: 0}
+  attackDamage: 10
+  attackRange: 15
+  attackCooldown: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -174,6 +180,10 @@ MonoBehaviour:
   frontRayLength: 2.5
   sideRayLength: 1.8
   fov: {fileID: 0}
+  stats: {fileID: 0}
+  attackDamage: 10
+  attackRange: 15
+  attackCooldown: 1
   moveSpeed: 20
   rotationSpeed: 5
   sprintKey: 304
@@ -202,6 +212,41 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   currentVisibleEnemy: {fileID: 0}
+--- !u!114 &5310834004354869142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149951357180145079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03606e9e1e36fc144b19dc63746192dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+--- !u!114 &8208828429357596658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149951357180145079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 270a3b578cd809546b50597b27af65d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateSprites:
+  - stateName: Idle
+    sprite: {fileID: 21300000, guid: e3c8a01dba5741a4a9ac890d703dd504, type: 3}
+  - stateName: Move
+    sprite: {fileID: 21300000, guid: ca08b084248eae342b7c5b8ed8c8d773, type: 3}
+  - stateName: Attack
+    sprite: {fileID: 21300000, guid: 163ee45b95408904ab33c236ef4e91eb, type: 3}
+  heightOffset: 3.5
+  spriteSize: 0.4
+  alwaysFaceCamera: 1
 --- !u!1 &272411881447566685
 GameObject:
   m_ObjectHideFlags: 0

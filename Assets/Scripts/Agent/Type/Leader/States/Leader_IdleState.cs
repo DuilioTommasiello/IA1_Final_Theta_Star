@@ -17,7 +17,7 @@ public class Leader_IdleState : State
 
     protected override void OnUpdate(float deltaTime)
     {
-        Debug.Log($"IdleState.Update: HasDestination = {leader.HasDestination}");
+        //Debug.Log($"IdleState.Update: HasDestination = {leader.HasDestination}");
         if (leader.HasDestination)
         {
             Debug.Log("Enviando MoveOrder desde IdleState");

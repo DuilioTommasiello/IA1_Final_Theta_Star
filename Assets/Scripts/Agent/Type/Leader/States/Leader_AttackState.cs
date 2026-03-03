@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Leader_AttackState : State
@@ -13,16 +11,36 @@ public class Leader_AttackState : State
 
     protected override void OnEnter()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Leader Attack State Enter");
+        leader.Stop();
     }
 
     protected override void OnUpdate(float deltaTime)
     {
-        throw new System.NotImplementedException();
+        if (leader.CurrentTargetEnemy == null)
+        {
+            leader.SendInput(Agent.INPUT_ENEMY_LOST);
+            return;
+        }
+
+        leader.LookAt(leader.CurrentTargetEnemy.transform.position);
+
+        float dist = Vector3.Distance(leader.transform.position, leader.CurrentTargetEnemy.transform.position);
+        if (dist <= leader.AttackRange)
+        {
+            Vector3 dir = (leader.CurrentTargetEnemy.transform.position - leader.transform.position).normalized;
+            if (!Physics.Raycast(leader.transform.position, dir, dist, leader.ObstacleMask))
+            {
+                if (leader.CanAttack)
+                {
+                    leader.Attack(leader.CurrentTargetEnemy);
+                }
+            }
+        }
     }
 
     protected override void OnExit()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Leader Attack State Exit");
     }
 }

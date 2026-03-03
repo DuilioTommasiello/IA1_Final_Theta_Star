@@ -37,6 +37,6 @@ public class Leader_MoveState : State
 
     protected override void OnExit()
     {
-        // Opcional: cualquier limpieza necesaria
+
     }
 }

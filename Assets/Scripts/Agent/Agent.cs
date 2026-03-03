@@ -22,10 +22,19 @@ public class Agent : MonoBehaviour
     [Header("Field of View")]
     [SerializeField] protected FieldOfView fov;
 
+    [Header("Combat")]
+    [SerializeField] protected AgentStats stats;
+    [SerializeField] protected float attackDamage = 10f;
+    [SerializeField] protected float attackRange = 15f;
+    [SerializeField] protected float attackCooldown = 1f;
+    protected float lastAttackTime;
+
     [Header("Generic FSM Inputs")]
     public const string INPUT_ENEMY_SPOTTED = "EnemySpotted";
     public const string INPUT_ENEMY_LOST = "EnemyLost";
 
+    public AgentStats Stats => stats;
+    public bool CanAttack => Time.time - lastAttackTime >= attackCooldown;
     public Agent target { get { return _target; } }
     public Vector3 velocity { get { return _velocity; } }
     public List<Transform> waypoints { get { return _waypoints; } }
@@ -44,12 +53,11 @@ public class Agent : MonoBehaviour
 
     protected virtual void Start()
     {
-        if(fov != null)
-        {
-            fov.targetMask = GetEnemyLayers();
-            fov.obstructionMask = _obstacleMask;
-        }
+        if(fov == null) fov = GetComponent<FieldOfView>();
+        if(stats == null) stats = GetComponent<AgentStats>();
     }
+
+    #region Steering Behaviours
 
     protected virtual void AgentUpdate() { ApplyMovement(); }
 
@@ -206,33 +214,49 @@ public class Agent : MonoBehaviour
     public Vector3 Evade(Agent target) { return -Pursuit(target); }
     public Vector3 Stop() { return _velocity = Vector3.zero; }
 
+    #endregion
+
+    #region Attack
+    public void Attack(Agent target)
+    {
+        if (target == null || !CanAttack) return;
+
+        if (target == this)
+        {
+            Debug.LogWarning("Intenta atacarse a sí mismo");
+            return;
+        }
+
+        if (target.Stats == null)
+        {
+            Debug.LogWarning($"{target.name} no tiene componente AgentStats");
+            return;
+        }
+        target.Stats.TakeDamage(attackDamage);
+        lastAttackTime = Time.time;
+        Debug.Log($"{name} ataca a {target.name} causando {attackDamage} de daño.");
+    }
+    #endregion
+
     #region FOV
     public Agent GetVisibleEnemy()
     {
         return fov != null ? fov.CurrentVisibleEnemy : null;
     }
-
-    private LayerMask GetEnemyLayers()
-    {
-        switch (_team)
-        {
-            case Team.Team1:
-                return LayerMask.GetMask("Team2", "Team3", "Team4");
-            case Team.Team2:
-                return LayerMask.GetMask("Team1", "Team3", "Team4");
-            case Team.Team3:
-                return LayerMask.GetMask("Team1", "Team2", "Team4");
-            case Team.Team4:
-                return LayerMask.GetMask("Team1", "Team2", "Team3");
-            default:
-                return 0;
-        }
-    } 
     #endregion
+
+    #region Visuals/Debug
+    public virtual string GetCurrentStateName()
+    {
+        return "Unknown";
+    }
 
     protected void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * 2f);
     }
+    #endregion
+
+
 }
