@@ -46,30 +46,6 @@ public class Leader : Agent
         InitializeFSM();
     }
 
-    private void InitializeFSM()
-    {
-        Leader_IdleState idle = new Leader_IdleState(this);
-        Leader_MoveState move = new Leader_MoveState(this);
-        Leader_AttackState attack = new Leader_AttackState(this);
-
-        idle.AddTransition(INPUT_MOVE_ORDER, move);
-        idle.AddTransition(INPUT_ENEMY_SPOTTED, attack);
-
-        move.AddTransition(INPUT_ARRIVED, idle);
-        move.AddTransition(INPUT_ENEMY_SPOTTED, attack);
-
-        attack.AddTransition(INPUT_ENEMY_LOST, idle);
-        attack.AddTransition(INPUT_MOVE_ORDER, move);
-
-        fsm = new FSM(idle);
-    }
-
-    public void SendInput(string input)
-    {
-        Debug.Log($"SendInput: {input} desde estado {fsm.currentState?.GetType().Name}"); // debug
-        fsm?.SendInput(input);
-    }
-
     private void Update()
     {
         if (selectedLeader == this)
@@ -106,6 +82,33 @@ public class Leader : Agent
         ApplyMovement();
     }
 
+    #region FSM
+    private void InitializeFSM()
+    {
+        Leader_IdleState idle = new Leader_IdleState(this);
+        Leader_MoveState move = new Leader_MoveState(this);
+        Leader_AttackState attack = new Leader_AttackState(this);
+
+        idle.AddTransition(INPUT_MOVE_ORDER, move);
+        idle.AddTransition(INPUT_ENEMY_SPOTTED, attack);
+
+        move.AddTransition(INPUT_ARRIVED, idle);
+        move.AddTransition(INPUT_ENEMY_SPOTTED, attack);
+
+        attack.AddTransition(INPUT_ENEMY_LOST, idle);
+        attack.AddTransition(INPUT_MOVE_ORDER, move);
+
+        fsm = new FSM(idle);
+    }
+
+    public void SendInput(string input)
+    {
+        Debug.Log($"SendInput: {input} desde estado {fsm.currentState?.GetType().Name}"); // debug
+        fsm?.SendInput(input);
+    }
+    #endregion
+
+    #region Controller
     private void HandleInput()
     {
         if (Input.GetMouseButtonDown(1))
@@ -183,7 +186,8 @@ public class Leader : Agent
             selectedLeader = null;
             OnDeselected();
         }
-    }
+    } 
+    #endregion
 
     #region Visuals/Debug
     public override string GetCurrentStateName()
