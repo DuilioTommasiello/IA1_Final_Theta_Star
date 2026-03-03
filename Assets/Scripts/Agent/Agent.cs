@@ -10,11 +10,14 @@ public class Agent : MonoBehaviour
     [SerializeField] private List<Transform> _waypoints = new();
     [SerializeField] protected LayerMask _obstacleMask;
     [SerializeField] protected Team _team = Team.Team1;
+    [SerializeField, Range(0f, 1f)] protected float _stoppingForce = 1f;
 
     [Header("Obstacle Avoidance")]
     [SerializeField] protected float avoidanceSmoothTime = 0.2f;
     [SerializeField] protected float maxAvoidanceForce = 5f;
     protected Vector3 smoothedAvoidanceForce = Vector3.zero;
+    [SerializeField] private float frontRayLength = 2.5f;
+    [SerializeField] private float sideRayLength = 1.8f;
 
     public Agent target { get { return _target; } }
     public Vector3 velocity { get { return _velocity; } }
@@ -81,7 +84,7 @@ public class Agent : MonoBehaviour
         Vector3 desired = targetPos - transform.position;
 
         if (desired.magnitude < _stopDistance)
-            return -_velocity * 0.5f; // fuerza de frenado
+            return -_velocity * _stoppingForce; // fuerza de frenado
 
         desired.Normalize();
         desired *= _maxSpeed;
@@ -133,25 +136,21 @@ public class Agent : MonoBehaviour
         Vector3 rawAvoidance = Vector3.zero;
         Transform t = transform;
 
-        // longitudes de rayos para deteccion cercana
-        float frontRayLength = 2.5f;
-        float sideRayLength = 1.8f;
-
         Vector3[] rayDirections = {
-            t.forward,
-            (t.forward + t.right).normalized,
-            (t.forward - t.right).normalized,
-            t.right,
-            -t.right
-        };
+        t.forward,
+        (t.forward + t.right).normalized,
+        (t.forward - t.right).normalized,
+        t.right,
+        -t.right
+    };
 
         float[] rayLengths = {
-            frontRayLength,
-            frontRayLength * 0.8f,
-            frontRayLength * 0.8f,
-            sideRayLength,
-            sideRayLength
-        };
+        frontRayLength,
+        frontRayLength * 0.8f,
+        frontRayLength * 0.8f,
+        sideRayLength,
+        sideRayLength
+    };
 
         float[] rayWeights = { 1.2f, 1.0f, 1.0f, 0.6f, 0.6f };
 
@@ -161,7 +160,6 @@ public class Agent : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirections[i], out RaycastHit hit, rayLengths[i], obstacleMask))
             {
                 float distance = hit.distance;
-                // factor cuadratico: aumenta rapidamente al acercarse
                 float tFactor = Mathf.Clamp01(distance / rayLengths[i]);
                 float repulsionFactor = (1f - tFactor) * (1f - tFactor);
 

@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 149951357180145079}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.2500005, y: 0, z: 3.9729996}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
@@ -98,7 +98,7 @@ MonoBehaviour:
   _maxForce: 35
   _viewRadius: 25
   _stopDistance: 1
-  _modelRadius: 1.5
+  _modelRadius: 0.5
   _maxSpeed: 5
   _velocity: {x: 0, y: 0, z: 0}
   _waypoints: []
@@ -106,8 +106,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _team: 0
+  _stoppingForce: 1
   avoidanceSmoothTime: 0.2
   maxAvoidanceForce: 1
+  frontRayLength: 3
+  sideRayLength: 2.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -163,8 +166,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _team: 0
+  _stoppingForce: 0
   avoidanceSmoothTime: 0.2
   maxAvoidanceForce: 10
+  frontRayLength: 2.5
+  sideRayLength: 1.8
   moveSpeed: 20
   rotationSpeed: 5
   sprintKey: 304
