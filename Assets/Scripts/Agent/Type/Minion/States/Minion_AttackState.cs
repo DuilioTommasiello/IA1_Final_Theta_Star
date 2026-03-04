@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Minion_AttackState : State
@@ -12,6 +13,11 @@ public class Minion_AttackState : State
     protected override void OnEnter()
     {
         minion.Stop();
+        if (minion.soldierController != null)
+        {
+            minion.soldierController.movement = SoldierMovement.NoMovement;
+            minion.soldierController.action = SoldierAction.Shoot01;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

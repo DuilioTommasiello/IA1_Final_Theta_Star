@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Minion_FollowState : State
@@ -11,7 +12,11 @@ public class Minion_FollowState : State
 
     protected override void OnEnter()
     {
-
+        if (minion.soldierController != null)
+        {
+            minion.soldierController.movement = SoldierMovement.Run;
+            minion.soldierController.action = SoldierAction.HoldWeapon;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

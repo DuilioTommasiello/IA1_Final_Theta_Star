@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Minion_IdleState : State
@@ -12,6 +13,12 @@ public class Minion_IdleState : State
     protected override void OnEnter()
     {
         minion.Stop();
+
+        if (minion.soldierController != null)
+        {
+            minion.soldierController.movement = SoldierMovement.NoMovement;
+            minion.soldierController.action = SoldierAction.HoldWeapon;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

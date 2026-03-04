@@ -1,4 +1,5 @@
 using UnityEngine;
+using KevinIglesias;
 
 public class Leader_IdleState : State
 {
@@ -11,8 +12,12 @@ public class Leader_IdleState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Idle");
         leader.Stop();
+        if(leader.soldierController != null)
+        {
+            leader.soldierController.movement = SoldierMovement.NoMovement;
+            leader.soldierController.action = SoldierAction.HoldWeapon;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

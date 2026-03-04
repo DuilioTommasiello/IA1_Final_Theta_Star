@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Leader_MoveState : State
@@ -11,7 +12,11 @@ public class Leader_MoveState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Move");
+        if (leader.soldierController != null)
+        {
+            leader.soldierController.movement = SoldierMovement.Run;
+            leader.soldierController.action = SoldierAction.HoldWeapon;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

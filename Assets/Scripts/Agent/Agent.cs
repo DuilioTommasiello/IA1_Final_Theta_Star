@@ -36,7 +36,7 @@ public class Agent : MonoBehaviour
     public const string INPUT_ENEMY_LOST = "EnemyLost";
 
     [Header("Animation")]
-    [SerializeField] protected HumanSoldierController soldierController;
+    [SerializeField] public HumanSoldierController soldierController;
 
     public AgentStats Stats => stats;
     public bool CanAttack => Time.time - lastAttackTime >= attackCooldown;

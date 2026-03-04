@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Leader_AttackState : State
@@ -11,8 +12,13 @@ public class Leader_AttackState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Leader Attack State Enter");
         leader.Stop();
+
+        if (leader.soldierController != null)
+        {
+            leader.soldierController.movement = SoldierMovement.NoMovement;
+            leader.soldierController.action = SoldierAction.Shoot01;
+        }
     }
 
     protected override void OnUpdate(float deltaTime)

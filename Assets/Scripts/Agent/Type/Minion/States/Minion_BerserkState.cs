@@ -1,3 +1,4 @@
+using KevinIglesias;
 using UnityEngine;
 
 public class Minion_BerserkState : State
@@ -14,7 +15,12 @@ public class Minion_BerserkState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Minion Berserk State Enter");
+        if (minion.soldierController != null)
+        {
+            minion.soldierController.movement = SoldierMovement.Run;
+            minion.soldierController.action = SoldierAction.Shoot01; // Puede ser Shoot mientras corre
+        }
+
         searchTimer = 0f;
         PickNewSearchDirection();
     }
