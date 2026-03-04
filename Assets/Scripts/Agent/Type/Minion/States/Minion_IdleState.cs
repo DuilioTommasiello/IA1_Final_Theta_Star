@@ -11,17 +11,22 @@ public class Minion_IdleState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Minion Idle State Enter");
         minion.Stop();
     }
 
     protected override void OnUpdate(float deltaTime)
     {
-        // No hace nada, espera a que llegue un input
+        if (minion.Leader == null) return;
+
+        float distToLeader = Vector3.Distance(minion.transform.position, minion.Leader.transform.position);
+        if (distToLeader > minion.FollowStopDistance)
+        {
+            minion.SendInput(Minion.INPUT_TOO_FAR);
+        }
     }
 
     protected override void OnExit()
     {
-        Debug.Log("Minion Idle State Exit");
+
     }
 }

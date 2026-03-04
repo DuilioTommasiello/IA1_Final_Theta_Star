@@ -11,7 +11,6 @@ public class Minion_AttackState : State
 
     protected override void OnEnter()
     {
-        Debug.Log("Minion Attack State Enter");
         minion.Stop();
     }
 
@@ -19,7 +18,11 @@ public class Minion_AttackState : State
     {
         if (minion.CurrentTargetEnemy == null)
         {
-            minion.SendInput(Agent.INPUT_ENEMY_LOST);
+            // Decidir a dónde ir
+            if (minion.Leader != null && Vector3.Distance(minion.transform.position, minion.Leader.transform.position) <= minion.FollowStopDistance)
+                minion.SendInput(Minion.INPUT_LOST_TO_IDLE);
+            else
+                minion.SendInput(Minion.INPUT_LOST_TO_FOLLOW);
             return;
         }
 
@@ -41,6 +44,6 @@ public class Minion_AttackState : State
 
     protected override void OnExit()
     {
-        Debug.Log("Minion Attack State Exit");
+
     }
 }

@@ -15918,18 +15918,6 @@ PrefabInstance:
       propertyPath: leader
       value: 
       objectReference: {fileID: 5484800058232857956}
-    - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
-      propertyPath: leaderWeight
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
-      propertyPath: cohesionWeight
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
-      propertyPath: separationRadius
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 8278000426571185957, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: m_Name
       value: Minion

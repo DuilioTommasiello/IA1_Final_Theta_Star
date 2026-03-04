@@ -7,12 +7,20 @@ public class Minion : Agent
     private FSM fsm;
 
     [Header("FSM Inputs")]
-    [HideInInspector] public string INPUT_ENEMY_SPOTTED = "EnemySpotted";
-    [HideInInspector] public string INPUT_ENEMY_LOST = "EnemyLost";
+    public const string INPUT_ENEMY_SPOTTED = "EnemySpotted";
+    public const string INPUT_ENEMY_LOST = "EnemyLost";
+    public const string INPUT_TOO_FAR = "TooFar";
+    public const string INPUT_CLOSE_ENOUGH = "CloseEnough";
+    public const string INPUT_LOST_TO_IDLE = "LostToIdle";
+    public const string INPUT_LOST_TO_FOLLOW = "LostToFollow";
 
     [Header("Leader")]
     [SerializeField] private Leader leader;
     public Leader Leader => leader;
+
+    [Header("Follow Settings")]
+    [SerializeField] private float followStopDistance = 3f;
+    public float FollowStopDistance => followStopDistance;
 
     [Header("Flocking Settings")]
     [SerializeField] private float separationWeight = 1.5f;
@@ -48,11 +56,21 @@ public class Minion : Agent
 
     private void InitializeFSM()
     {
+        Minion_IdleState idle = new Minion_IdleState(this);
         Minion_FollowState follow = new Minion_FollowState(this);
         Minion_AttackState attack = new Minion_AttackState(this);
 
+        // Transiciones desde Idle
+        idle.AddTransition(INPUT_ENEMY_SPOTTED, attack);
+        idle.AddTransition(INPUT_TOO_FAR, follow);
+
+        // Transiciones desde Follow
         follow.AddTransition(INPUT_ENEMY_SPOTTED, attack);
-        attack.AddTransition(INPUT_ENEMY_LOST, follow);
+        follow.AddTransition(INPUT_CLOSE_ENOUGH, idle);
+
+        // Transiciones desde Attack
+        attack.AddTransition(INPUT_LOST_TO_IDLE, idle);
+        attack.AddTransition(INPUT_LOST_TO_FOLLOW, follow);
 
         fsm = new FSM(follow);
     }
@@ -192,10 +210,10 @@ public class Minion : Agent
         Vector3 alignment = CalculateAlignment(mates) * alignmentWeight;
         Vector3 cohesion = CalculateCohesion(mates) * cohesionWeight;
 
-        Vector3 flocking = separation + alignment + cohesion;
-        if (flocking.magnitude > maxFlockingForce)
-            flocking = flocking.normalized * maxFlockingForce;
-        return flocking;
+        Vector3 flockingForce = separation + alignment + cohesion;
+        if (flockingForce.magnitude > maxFlockingForce)
+            flockingForce = flockingForce.normalized * maxFlockingForce;
+        return flockingForce;
     }
     #endregion
 
