@@ -2150,6 +2150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _healthbarSprite: {fileID: 4563187249329997188}
+  _reduceSpeed: 2
 --- !u!1 &8077412921919642444
 GameObject:
   m_ObjectHideFlags: 0
@@ -2292,7 +2293,7 @@ MonoBehaviour:
   animator: {fileID: 1361068254248010635}
   equippedWeapon: 4
   position: 0
-  action: 0
+  action: 1
   movement: 0
   weapons:
   - {fileID: 2867445915885421454}
@@ -2334,6 +2335,7 @@ MonoBehaviour:
   stats: {fileID: 0}
   attackDamage: 10
   attackCooldown: 2
+  soldierController: {fileID: 0}
   leader: {fileID: 0}
   followStopDistance: 4
   separationWeight: 8

@@ -4636,6 +4636,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 386075347}
     m_Modifications:
+    - target: {fileID: 1475559636825024507, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 1526519582923653804, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: targetMask.m_Bits
       value: 3328
@@ -4684,6 +4688,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5331198172633751513, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: leader
       value: 
@@ -7280,6 +7288,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 386075347}
     m_Modifications:
+    - target: {fileID: 1475559636825024507, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 1526519582923653804, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: targetMask.m_Bits
       value: 3328
@@ -7328,6 +7340,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5331198172633751513, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: leader
       value: 
@@ -8677,6 +8693,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3976813115654909001, guid: f26e4a5c129412a4f9e3f7d8a5c82554, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 4861463510543742817, guid: f26e4a5c129412a4f9e3f7d8a5c82554, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.2500005
@@ -8725,6 +8745,10 @@ PrefabInstance:
       propertyPath: targetMask.m_Bits
       value: 3328
       objectReference: {fileID: 0}
+    - target: {fileID: 8457241730534948374, guid: f26e4a5c129412a4f9e3f7d8a5c82554, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13994,6 +14018,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 386075347}
     m_Modifications:
+    - target: {fileID: 1475559636825024507, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 1526519582923653804, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: targetMask.m_Bits
       value: 3328
@@ -14042,6 +14070,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5331198172633751513, guid: ed38b4418c859144e99ace487b706d48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f7e7c31da018604f94d5d701a213216, type: 2}
     - target: {fileID: 6262474754183179415, guid: ed38b4418c859144e99ace487b706d48, type: 3}
       propertyPath: leader
       value: 
