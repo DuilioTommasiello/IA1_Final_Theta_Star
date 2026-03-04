@@ -1,3 +1,4 @@
+using KevinIglesias;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,6 +35,9 @@ public class Agent : MonoBehaviour
     public const string INPUT_ENEMY_SPOTTED = "EnemySpotted";
     public const string INPUT_ENEMY_LOST = "EnemyLost";
 
+    [Header("Animation")]
+    [SerializeField] protected HumanSoldierController soldierController;
+
     public AgentStats Stats => stats;
     public bool CanAttack => Time.time - lastAttackTime >= attackCooldown;
     public Agent target { get { return _target; } }
@@ -56,6 +60,7 @@ public class Agent : MonoBehaviour
     {
         if(fov == null) fov = GetComponent<FieldOfView>();
         if(stats == null) stats = GetComponent<AgentStats>();
+        if (soldierController == null) soldierController = GetComponent<HumanSoldierController>();
     }
 
     #region Steering Behaviours
@@ -263,6 +268,44 @@ public class Agent : MonoBehaviour
     public Agent GetVisibleEnemy()
     {
         return fov != null ? fov.CurrentVisibleEnemy : null;
+    }
+    #endregion
+
+    #region Animation
+    protected virtual void LateUpdate()
+    {
+        if (soldierController == null) return;
+
+        string state = GetCurrentStateName();
+        UpdateAnimation(state);
+    }
+
+    protected virtual void UpdateAnimation(string stateName)
+    {
+        switch (stateName)
+        {
+            case "Idle":
+                soldierController.movement = SoldierMovement.NoMovement;
+                soldierController.action = SoldierAction.HoldWeapon;
+                break;
+            case "Move":
+            case "Follow":
+                soldierController.movement = SoldierMovement.Run;
+                soldierController.action = SoldierAction.HoldWeapon;
+                break;
+            case "Attack":
+                soldierController.movement = SoldierMovement.NoMovement;
+                soldierController.action = SoldierAction.Shoot01;
+                break;
+            case "Berserk":
+                soldierController.movement = SoldierMovement.Run;
+                soldierController.action = SoldierAction.Shoot02;
+                break;
+            default:
+                soldierController.movement = SoldierMovement.NoMovement;
+                soldierController.action = SoldierAction.HoldWeapon;
+                break;
+        }
     }
     #endregion
 
