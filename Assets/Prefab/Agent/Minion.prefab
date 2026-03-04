@@ -2045,11 +2045,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _maxForce: 20
+  _maxForce: 18
   _viewRadius: 15
   _stopDistance: 2
   _modelRadius: 1
-  _maxSpeed: 8
+  _maxSpeed: 4
   _velocity: {x: 0, y: 0, z: 0}
   _waypoints: []
   _obstacleMask:
@@ -2058,21 +2058,20 @@ MonoBehaviour:
   _team: 0
   _stoppingForce: 1
   avoidanceSmoothTime: 0.2
-  maxAvoidanceForce: 5
-  frontRayLength: 2.5
-  sideRayLength: 1.8
+  maxAvoidanceForce: 10
+  frontRayLength: 3.5
+  sideRayLength: 2.5
   fov: {fileID: 0}
   stats: {fileID: 0}
   attackDamage: 10
   attackRange: 10
   attackCooldown: 2
-  INPUT_ENEMY_SPOTTED: EnemySpotted
-  INPUT_ENEMY_LOST: EnemyLost
   leader: {fileID: 0}
-  separationWeight: 1.5
-  alignmentWeight: 1
-  cohesionWeight: 0.5
-  leaderWeight: 10
+  followStopDistance: 4
+  separationWeight: 8
+  alignmentWeight: 0.2
+  cohesionWeight: 3
+  leaderWeight: 20
   separationRadius: 4
   neighborRadius: 5
   maxFlockingForce: 5

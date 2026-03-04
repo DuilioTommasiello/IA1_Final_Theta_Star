@@ -98,11 +98,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _maxForce: 35
+  _maxForce: 20
   _viewRadius: 25
-  _stopDistance: 1
+  _stopDistance: 1.5
   _modelRadius: 0.5
-  _maxSpeed: 5
+  _maxSpeed: 10
   _velocity: {x: 0, y: 0, z: 0}
   _waypoints: []
   _obstacleMask:
@@ -111,8 +111,8 @@ MonoBehaviour:
   _team: 0
   _stoppingForce: 1
   avoidanceSmoothTime: 0.2
-  maxAvoidanceForce: 1
-  frontRayLength: 3
+  maxAvoidanceForce: 10
+  frontRayLength: 3.5
   sideRayLength: 2.5
   fov: {fileID: 0}
   stats: {fileID: 0}
@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03606e9e1e36fc144b19dc63746192dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentHealth: 0
   maxHealth: 100
 --- !u!114 &8208828429357596658
 MonoBehaviour:
