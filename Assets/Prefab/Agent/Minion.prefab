@@ -2057,6 +2057,7 @@ MonoBehaviour:
     m_Bits: 64
   _team: 0
   _stoppingForce: 1
+  slowingDistance: 5
   avoidanceSmoothTime: 0.2
   maxAvoidanceForce: 10
   frontRayLength: 3.5
@@ -2064,7 +2065,6 @@ MonoBehaviour:
   fov: {fileID: 0}
   stats: {fileID: 0}
   attackDamage: 10
-  attackRange: 10
   attackCooldown: 2
   leader: {fileID: 0}
   followStopDistance: 4
@@ -2124,7 +2124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f073d4a60316e904e9ca723a7da60819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 25
+  radius: 30
   angle: 100
   fovRefreshRate: 0.2
   targetMask:

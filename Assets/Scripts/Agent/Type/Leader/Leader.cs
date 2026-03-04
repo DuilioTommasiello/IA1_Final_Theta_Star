@@ -26,7 +26,6 @@ public class Leader : Agent
 
     // getters para acceso desde estados
     public Agent CurrentTargetEnemy => currentTargetEnemy;
-    public float AttackRange => attackRange;
     public void Attack() => base.Attack(currentTargetEnemy);
     public bool HasDestination => hasDestination;
     public Vector3 Destination => destination;

@@ -27,7 +27,6 @@ public class Agent : MonoBehaviour
     [Header("Combat")]
     [SerializeField] protected AgentStats stats;
     [SerializeField] protected float attackDamage = 10f;
-    [SerializeField] protected float attackRange = 15f;
     [SerializeField] protected float attackCooldown = 1f;
     protected float lastAttackTime;
 
@@ -230,7 +229,17 @@ public class Agent : MonoBehaviour
     #region Attack
     public void Attack(Agent target)
     {
-        if (target == null || !CanAttack) return;
+        if (target == null)
+        {
+            Debug.LogWarning($"{name}: Intenta atacar a un target nulo.");
+            return;
+        }
+
+        if (!CanAttack)
+        {
+            Debug.Log($"{name}: No puede atacar, cooldown.");
+            return;
+        }
 
         if (target == this)
         {
@@ -243,6 +252,7 @@ public class Agent : MonoBehaviour
             Debug.LogWarning($"{target.name} no tiene componente AgentStats");
             return;
         }
+        Debug.Log($"{name}: Atacando a {target.name}, salud actual: {target.Stats.CurrentHealth}, daño: {attackDamage}");
         target.Stats.TakeDamage(attackDamage);
         lastAttackTime = Time.time;
         Debug.Log($"{name} ataca a {target.name} causando {attackDamage} de daño.");

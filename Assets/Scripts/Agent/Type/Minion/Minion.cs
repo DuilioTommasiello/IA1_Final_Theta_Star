@@ -36,7 +36,6 @@ public class Minion : Agent
     private Agent currentTargetEnemy;
 
     public Agent CurrentTargetEnemy => currentTargetEnemy;
-    public float AttackRange => attackRange;
     public void Attack() => base.Attack(currentTargetEnemy);
 
     protected override void Start()
@@ -83,7 +82,6 @@ public class Minion : Agent
 
     private void Update()
     {
-        // Detección de enemigos mediante FOV
         Agent visibleEnemy = GetVisibleEnemy();
         if (visibleEnemy != null)
         {
@@ -98,7 +96,6 @@ public class Minion : Agent
             if (currentTargetEnemy != null)
             {
                 currentTargetEnemy = null;
-                SendInput(INPUT_ENEMY_LOST);
             }
         }
 

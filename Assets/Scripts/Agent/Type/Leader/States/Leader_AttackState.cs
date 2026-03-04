@@ -25,18 +25,7 @@ public class Leader_AttackState : State
 
         leader.LookAt(leader.CurrentTargetEnemy.transform.position);
 
-        float dist = Vector3.Distance(leader.transform.position, leader.CurrentTargetEnemy.transform.position);
-        if (dist <= leader.AttackRange)
-        {
-            Vector3 dir = (leader.CurrentTargetEnemy.transform.position - leader.transform.position).normalized;
-            if (!Physics.Raycast(leader.transform.position, dir, dist, leader.ObstacleMask))
-            {
-                if (leader.CanAttack)
-                {
-                    leader.Attack(leader.CurrentTargetEnemy);
-                }
-            }
-        }
+        if (leader.CanAttack) leader.Attack(leader.CurrentTargetEnemy);
     }
 
     protected override void OnExit()
