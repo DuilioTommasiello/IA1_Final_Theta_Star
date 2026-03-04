@@ -115,6 +115,26 @@ public class Minion : Agent
         ApplyMovement();
     }
 
+    public Leader GetClosestEnemyLeader()
+    {
+        Leader[] allLeaders = FindObjectsOfType<Leader>();
+        Leader closest = null;
+        float closestDist = Mathf.Infinity;
+        foreach (Leader l in allLeaders)
+        {
+            if (l.team != this.team && l.Stats != null && l.Stats.CurrentHealth > 0)
+            {
+                float dist = Vector3.Distance(transform.position, l.transform.position);
+                if (dist < closestDist)
+                {
+                    closestDist = dist;
+                    closest = l;
+                }
+            }
+        }
+        return closest;
+    }
+
     public override string GetCurrentStateName()
     {
         if (fsm == null || fsm.currentState == null) return "Unknown";
