@@ -13,6 +13,7 @@ public class Minion : Agent
     public const string INPUT_CLOSE_ENOUGH = "CloseEnough";
     public const string INPUT_LOST_TO_IDLE = "LostToIdle";
     public const string INPUT_LOST_TO_FOLLOW = "LostToFollow";
+    public const string INPUT_LEADER_DEAD = "LeaderDead";
 
     [Header("Leader")]
     [SerializeField] private Leader leader;
@@ -58,18 +59,22 @@ public class Minion : Agent
         Minion_IdleState idle = new Minion_IdleState(this);
         Minion_FollowState follow = new Minion_FollowState(this);
         Minion_AttackState attack = new Minion_AttackState(this);
+        Minion_BerserkState berserk = new Minion_BerserkState(this);
 
         // Transiciones desde Idle
         idle.AddTransition(INPUT_ENEMY_SPOTTED, attack);
         idle.AddTransition(INPUT_TOO_FAR, follow);
+        idle.AddTransition(INPUT_LEADER_DEAD, berserk);
 
         // Transiciones desde Follow
         follow.AddTransition(INPUT_ENEMY_SPOTTED, attack);
         follow.AddTransition(INPUT_CLOSE_ENOUGH, idle);
+        follow.AddTransition(INPUT_LEADER_DEAD, berserk);
 
         // Transiciones desde Attack
         attack.AddTransition(INPUT_LOST_TO_IDLE, idle);
         attack.AddTransition(INPUT_LOST_TO_FOLLOW, follow);
+        attack.AddTransition(INPUT_LEADER_DEAD, berserk);
 
         fsm = new FSM(follow);
     }
@@ -213,6 +218,11 @@ public class Minion : Agent
         return flockingForce;
     }
     #endregion
+
+    public void OnLeaderDeath()
+    {
+        SendInput(INPUT_LEADER_DEAD);
+    }
 
     private void OnDestroy()
     {

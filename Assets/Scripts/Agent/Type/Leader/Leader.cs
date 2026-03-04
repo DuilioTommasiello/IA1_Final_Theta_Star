@@ -35,6 +35,9 @@ public class Leader : Agent
     {
         base.Start();
 
+        if(stats != null)
+            stats.OnDeath += HandleDeath;
+
         rend = GetComponent<Renderer>();
         if (rend != null)
             originalColor = rend.material.color;
@@ -79,6 +82,16 @@ public class Leader : Agent
             AddForce(smoothedAvoidanceForce);
 
         ApplyMovement();
+    }
+
+    private void HandleDeath()
+    {
+        Debug.Log($"{gameObject.name} ha muerto, notificando minions");
+        foreach (Minion m in Minion.allMinions)
+        {
+            if (m.Leader == this)
+                m.OnLeaderDeath();
+        }
     }
 
     #region FSM
