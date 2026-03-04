@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class Agent : MonoBehaviour
     [SerializeField] protected LayerMask _obstacleMask;
     [SerializeField] protected Team _team = Team.Team1;
     [SerializeField, Range(0f, 1f)] protected float _stoppingForce = 1f;
+    [SerializeField] private float slowingDistance = 5f;
 
     [Header("Obstacle Avoidance")]
     [SerializeField] protected float avoidanceSmoothTime = 0.2f;
@@ -98,9 +100,18 @@ public class Agent : MonoBehaviour
     public Vector3 Arrive(Vector3 targetPos)
     {
         float dist = Vector3.Distance(transform.position, targetPos);
-        if (dist < _stopDistance) dist = 0;
-        if (dist > _viewRadius) return Seek(targetPos);
-        return Seek(targetPos, _maxSpeed * (dist / _viewRadius));
+
+        if (dist < _stopDistance)
+            return -_velocity * _stoppingForce;
+
+        if (dist > slowingDistance)
+            return Seek(targetPos);
+
+        // Dentro del radio de desaceleración, reducir velocidad proporcionalmente
+        float desiredSpeed = _maxSpeed * (dist / slowingDistance);
+        Vector3 desired = (targetPos - transform.position).normalized * desiredSpeed;
+        Vector3 steering = desired - _velocity;
+        return Vector3.ClampMagnitude(steering, _maxForce);
     }
 
     public Vector3 Seek(Vector3 targetPos)

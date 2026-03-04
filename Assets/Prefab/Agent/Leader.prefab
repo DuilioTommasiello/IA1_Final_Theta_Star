@@ -102,7 +102,7 @@ MonoBehaviour:
   _viewRadius: 25
   _stopDistance: 1.5
   _modelRadius: 0.5
-  _maxSpeed: 10
+  _maxSpeed: 5
   _velocity: {x: 0, y: 0, z: 0}
   _waypoints: []
   _obstacleMask:
@@ -110,6 +110,7 @@ MonoBehaviour:
     m_Bits: 64
   _team: 0
   _stoppingForce: 1
+  slowingDistance: 5
   avoidanceSmoothTime: 0.2
   maxAvoidanceForce: 10
   frontRayLength: 3.5
@@ -175,6 +176,7 @@ MonoBehaviour:
     m_Bits: 64
   _team: 0
   _stoppingForce: 0
+  slowingDistance: 5
   avoidanceSmoothTime: 0.2
   maxAvoidanceForce: 10
   frontRayLength: 2.5
