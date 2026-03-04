@@ -14,7 +14,7 @@ public class Leader : Agent
     [SerializeField] private Color selectedColor = Color.yellow;
     private Color originalColor;
     private Renderer rend;
-
+    [SerializeField] private GameObject selectionIndicator;
     private Vector3 destination;
     private bool hasDestination = false;
 
@@ -183,12 +183,14 @@ public class Leader : Agent
     {
         if (showDebug) Debug.Log($"{name} seleccionado");
         if (rend != null) rend.material.color = selectedColor;
+        if (selectionIndicator != null) selectionIndicator.SetActive(true);
     }
 
     private void OnDeselected()
     {
         if (showDebug) Debug.Log($"{name} deseleccionado");
         if (rend != null) rend.material.color = originalColor;
+        if (selectionIndicator != null) selectionIndicator.SetActive(false);
     }
 
     private void Deselect()
@@ -208,6 +210,8 @@ public class Leader : Agent
         string fullName = fsm.currentState.GetType().Name;
         return fullName.Replace("Leader_", "").Replace("State", "");
     }
+
+
 
     private void OnDrawGizmos()
     {
