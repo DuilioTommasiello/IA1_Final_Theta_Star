@@ -1961,6 +1961,9 @@ GameObject:
   - component: {fileID: 3375256521083999041}
   - component: {fileID: 6262474754183179415}
   - component: {fileID: 1133929001757871427}
+  - component: {fileID: 2348569488121092834}
+  - component: {fileID: 1526519582923653804}
+  - component: {fileID: 3552917810858177841}
   m_Layer: 0
   m_Name: Minion
   m_TagString: Untagged
@@ -2063,10 +2066,16 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 10
   attackCooldown: 2
-  weaponMuzzle: {fileID: 0}
-  shootableMask:
-    serializedVersion: 2
-    m_Bits: 0
+  INPUT_ENEMY_SPOTTED: EnemySpotted
+  INPUT_ENEMY_LOST: EnemyLost
+  leader: {fileID: 0}
+  separationWeight: 1.5
+  alignmentWeight: 1
+  cohesionWeight: 0.5
+  leaderWeight: 10
+  separationRadius: 4
+  neighborRadius: 5
+  maxFlockingForce: 5
 --- !u!136 &1133929001757871427
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2090,6 +2099,64 @@ CapsuleCollider:
   m_Height: 1.8917682
   m_Direction: 1
   m_Center: {x: 0, y: 0.9526683, z: 0}
+--- !u!114 &2348569488121092834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8278000426571185957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03606e9e1e36fc144b19dc63746192dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHealth: 0
+  maxHealth: 100
+--- !u!114 &1526519582923653804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8278000426571185957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f073d4a60316e904e9ca723a7da60819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 25
+  angle: 100
+  fovRefreshRate: 0.2
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 3840
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 64
+  currentVisibleEnemy: {fileID: 0}
+--- !u!114 &3552917810858177841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8278000426571185957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 270a3b578cd809546b50597b27af65d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateSprites:
+  - stateName: Idle
+    sprite: {fileID: 21300000, guid: e3c8a01dba5741a4a9ac890d703dd504, type: 3}
+  - stateName: Follow
+    sprite: {fileID: 21300000, guid: ca08b084248eae342b7c5b8ed8c8d773, type: 3}
+  - stateName: Attack
+    sprite: {fileID: 21300000, guid: 163ee45b95408904ab33c236ef4e91eb, type: 3}
+  heightOffset: 3.5
+  spriteSize: 0.5
+  alwaysFaceCamera: 1
 --- !u!1 &8440826066452256902
 GameObject:
   m_ObjectHideFlags: 0

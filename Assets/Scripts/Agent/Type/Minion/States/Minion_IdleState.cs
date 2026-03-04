@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Minion_IdleState : State
@@ -13,16 +11,17 @@ public class Minion_IdleState : State
 
     protected override void OnEnter()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Minion Idle State Enter");
+        minion.Stop();
     }
 
     protected override void OnUpdate(float deltaTime)
     {
-        throw new System.NotImplementedException();
+        // No hace nada, espera a que llegue un input
     }
 
     protected override void OnExit()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Minion Idle State Exit");
     }
 }
